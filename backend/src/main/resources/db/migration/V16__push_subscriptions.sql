@@ -1,0 +1,9 @@
+CREATE TABLE push_subscriptions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    employee_id BIGINT NOT NULL,
+    endpoint VARCHAR(1000) NOT NULL,
+    p256dh VARCHAR(255) NOT NULL,
+    auth VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+);

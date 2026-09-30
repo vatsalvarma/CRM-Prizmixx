@@ -1,0 +1,25 @@
+CREATE TABLE clients (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    company_name VARCHAR(100) NOT NULL UNIQUE,
+    industry VARCHAR(100),
+    website VARCHAR(100),
+    status VARCHAR(50) NOT NULL DEFAULT 'ACTIVE',
+    owner_id BIGINT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (owner_id) REFERENCES employees(id)
+);
+
+CREATE TABLE client_contacts (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    client_id BIGINT NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(50),
+    is_primary BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE,
+    UNIQUE (client_id, email)
+);

@@ -1,0 +1,22 @@
+# Node
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Java/Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

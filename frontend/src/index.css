@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --bg: #030712;
+    --surface: #111827;
+    --text: #f3f4f6;
+  }
+
+  /* Default / Employee Theme (Neon Red) */
+  .theme-employee {
+    --theme-accent: #FF1A1A;
+    --theme-accent-rgb: 255, 26, 26;
+    --theme-accent-contrast: #FFFFFF;
+    --theme-btn-bg: rgba(255, 26, 26, 0.1);
+    --theme-btn-hover-bg: rgba(255, 26, 26, 0.2);
+    --theme-btn-border: rgba(255, 26, 26, 0.5);
+    --theme-btn-text: #FF1A1A;
+    --theme-btn-hover-text: #FFFFFF;
+    --theme-btn-shadow: 0 0 15px rgba(255, 26, 26, 0.1);
+    --theme-btn-hover-shadow: 0 0 30px rgba(255, 26, 26, 0.4), inset 0 0 15px rgba(255, 26, 26, 0.2);
+    
+    --theme-glow-weak: rgba(255, 26, 26, 0.1);
+    --theme-glow-strong: rgba(255, 26, 26, 0.4);
+    --theme-glow-max: rgba(255, 26, 26, 0.8);
+  }
+
+  /* Admin Theme (Glass Black & Silver/White) */
+  .theme-admin {
+    --theme-accent: #FFFFFF;
+    --theme-accent-rgb: 255, 255, 255;
+    --theme-accent-contrast: #000000;
+    --theme-btn-bg: rgba(0, 0, 0, 0.4);
+    --theme-btn-hover-bg: rgba(255, 255, 255, 0.1);
+    --theme-btn-border: rgba(255, 255, 255, 0.3);
+    --theme-btn-text: #FFFFFF;
+    --theme-btn-hover-text: #FFFFFF;
+    --theme-btn-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+    --theme-btn-hover-shadow: 0 0 30px rgba(255, 255, 255, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.1);
+    
+    --theme-glow-weak: rgba(255, 255, 255, 0.05);
+    --theme-glow-strong: rgba(255, 255, 255, 0.2);
+    --theme-glow-max: rgba(255, 255, 255, 0.4);
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Montserrat', sans-serif;
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 0, 0, 0.5); /* Gold on hover */
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply relative bg-white/[0.02] backdrop-blur-3xl border border-white/10 border-t-white/40 border-l-white/40 shadow-[0_30px_60px_rgba(0,0,0,0.4),inset_0_0_20px_rgba(255,255,255,0.05)] overflow-hidden transition-all duration-500 hover:shadow-[0_40px_80px_rgba(0,0,0,0.6),inset_0_0_30px_rgba(255,255,255,0.1)] hover:bg-white/[0.04];
+  }
+
+  .glass-btn-theme {
+    background-color: var(--theme-btn-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--theme-btn-border);
+    color: var(--theme-btn-text);
+    box-shadow: var(--theme-btn-shadow);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .glass-btn-theme:hover:not(:disabled) {
+    background-color: var(--theme-btn-hover-bg);
+    border-color: var(--theme-accent);
+    box-shadow: var(--theme-btn-hover-shadow);
+    color: var(--theme-btn-hover-text);
+  }
+
+  .glass-btn-theme:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Legacy button for fallback, keeping just in case some component still uses it directly */
+  .glass-btn-red {
+    @apply relative bg-[#FF1A1A]/10 backdrop-blur-md border border-[#FF1A1A]/50 text-[#FF1A1A] shadow-[0_0_15px_rgba(255,26,26,0.1)] overflow-hidden transition-all duration-300 hover:bg-[#FF1A1A]/20 hover:border-[#FF1A1A] hover:shadow-[0_0_30px_rgba(255,26,26,0.4),inset_0_0_15px_rgba(255,26,26,0.2)] hover:text-white disabled:opacity-50 disabled:hover:bg-[#FF1A1A]/10 disabled:hover:border-[#FF1A1A]/50 disabled:hover:shadow-[0_0_15px_rgba(255,26,26,0.1)] disabled:hover:text-[#FF1A1A];
+  }
+}
+
+@layer utilities {
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
