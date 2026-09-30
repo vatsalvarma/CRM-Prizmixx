@@ -66,7 +66,7 @@ export const LoginForm = () => {
   return (
     <div 
       className="h-screen w-full flex items-center justify-center lg:justify-end lg:pr-[15%] bg-cover bg-center bg-no-repeat relative overflow-hidden"
-      style={{ backgroundImage: `url('/login-bg.png')` }}
+      style={{ backgroundImage: `url('${import.meta.env.BASE_URL}login-bg.png')` }}
     >
       {/* Portal Button Top Left */}
       <motion.button

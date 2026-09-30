@@ -175,7 +175,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div 
       className={`h-screen text-[#F5F5F5] flex relative bg-cover bg-center bg-no-repeat bg-fixed overflow-hidden ${themeClass}`}
-      style={{ backgroundImage: `url(${isLightTheme ? '/hr-bg.png' : isAdmin ? '/ad-bg.png' : '/emp-bg.png'})` }}
+      style={{ backgroundImage: `url('${import.meta.env.BASE_URL}${isLightTheme ? 'hr-bg.png' : isAdmin ? 'ad-bg.png' : 'emp-bg.png'}')` }}
     >
       <div className="absolute inset-0 bg-black/70 z-0 pointer-events-none" />
 

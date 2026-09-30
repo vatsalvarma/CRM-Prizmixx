@@ -216,7 +216,7 @@ export const ClientPortal = () => {
         
         {/* Robot Hand - Bottom Left */}
         <motion.img 
-          src="/rbo-hnd.png" 
+          src={`${import.meta.env.BASE_URL}rbo-hnd.png`}
           alt="Robot Hand"
           initial={{ x: "-100%", y: "100%", rotate: -20 }}
           animate={{ 
@@ -237,7 +237,7 @@ export const ClientPortal = () => {
 
         {/* Human Hand - Top Right */}
         <motion.img 
-          src="/hmn-hnd.png" 
+          src={`${import.meta.env.BASE_URL}hmn-hnd.png`}
           alt="Human Hand"
           initial={{ x: "100%", y: "-100%", rotate: 20 }}
           animate={{ 
