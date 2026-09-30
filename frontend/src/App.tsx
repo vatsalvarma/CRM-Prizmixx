@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { LoginForm } from './features/auth/LoginForm';
 import { ClientPortal } from './pages/ClientPortal';
 import { usePushNotifications } from './hooks/usePushNotifications';
@@ -335,7 +335,7 @@ const AnimatedDashboardRoutes = () => {
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<ClientPortal />} />
         <Route path="/login" element={<LoginForm />} />
@@ -355,7 +355,7 @@ function App() {
         {/* Default redirect */}
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
