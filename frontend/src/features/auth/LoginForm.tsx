@@ -3,15 +3,23 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { loginApi, getPublicDepartments } from './authApi';
+import { getPublicBranches, type Branch } from '../../api/branchApi';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Shield, Users, LayoutDashboard } from 'lucide-react';
+import { Eye, EyeOff, Shield, Users, LayoutDashboard, GitBranch } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const loginSchema = z.object({
   email: z.string().trim().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   type: z.enum(['ADMIN', 'EMPLOYEE']),
-  departmentId: z.number().optional()
+  departmentId: z.preprocess(
+    (v) => (v === '' || v === undefined || Number.isNaN(v) ? undefined : Number(v)),
+    z.number().optional()
+  ),
+  branchId: z.preprocess(
+    (v) => (v === '' || v === undefined || Number.isNaN(v) ? undefined : Number(v)),
+    z.number().optional()
+  ),
 }).refine(data => {
   if (data.type === 'EMPLOYEE' && !data.departmentId) {
     return false;
@@ -29,6 +37,7 @@ export const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginType, setLoginType] = useState<'ADMIN' | 'EMPLOYEE'>('ADMIN');
   const [departments, setDepartments] = useState<any[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
   const navigate = useNavigate();
   
   const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<LoginFormInputs>({
@@ -38,12 +47,14 @@ export const LoginForm = () => {
 
   useEffect(() => {
     getPublicDepartments().then(setDepartments).catch(console.error);
+    getPublicBranches().then(setBranches).catch(console.error);
   }, []);
 
   const handleTypeChange = (type: 'ADMIN' | 'EMPLOYEE') => {
     setLoginType(type);
     setValue('type', type);
     setValue('departmentId', undefined);
+    setValue('branchId', undefined);
   };
 
   const selectedDeptId = watch('departmentId');
@@ -165,11 +176,33 @@ export const LoginForm = () => {
           )}
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {/* Branch selector — always visible */}
+            {branches.length > 0 && (
+              <div>
+                <label className="block text-[11px] font-semibold tracking-wider text-white mb-2 pl-2 flex items-center gap-1.5">
+                  <GitBranch className="w-3 h-3 text-blue-400" /> Select Branch
+                </label>
+                <select
+                  {...register('branchId', {
+                    setValueAs: (v) => (v === '' || v === undefined ? undefined : Number(v))
+                  })}
+                  className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:bg-white/20 transition-all duration-300 text-sm shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)] appearance-none cursor-pointer"
+                >
+                  <option value="" className="text-black">All Branches</option>
+                  {branches.map(branch => (
+                    <option key={branch.id} value={branch.id} className="text-black">{branch.name} — {branch.city || branch.code}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             {loginType === 'EMPLOYEE' && (
               <div>
                 <label className="block text-[11px] font-semibold tracking-wider text-white mb-2 pl-2">Select Department</label>
                 <select
-                  {...register('departmentId', { valueAsNumber: true })}
+                  {...register('departmentId', {
+                    setValueAs: (v) => (v === '' || v === undefined ? undefined : Number(v))
+                  })}
                   className="w-full bg-white/5 hover:bg-white/10 border border-white/10 rounded-full px-5 py-3 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:bg-white/20 transition-all duration-300 text-sm shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)] appearance-none cursor-pointer"
                 >
                   <option value="" className="text-black">Choose...</option>

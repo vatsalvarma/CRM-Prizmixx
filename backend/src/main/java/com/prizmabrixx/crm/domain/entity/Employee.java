@@ -39,6 +39,11 @@ public class Employee {
     @JoinColumn(name = "manager_id")
     private Employee manager;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
+
+
     @Column(length = 50)
     private String shift;
 

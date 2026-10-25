@@ -26,4 +26,6 @@ public class EmployeeDTO {
     private String site;
     private String employmentStatus;
     private LocalDate joiningDate;
+    private Long branchId;
+    private String branchName;
 }

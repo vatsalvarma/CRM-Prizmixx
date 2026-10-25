@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { X, Check } from 'lucide-react';
+import { X, Check, GitBranch } from 'lucide-react';
 import { getDepartments } from '../../api/employeesApi';
+import { getAllBranches, type Branch } from '../../api/branchApi';
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: { firstName: string; lastName: string; departmentId: number; manualPassword?: string; employmentStatus?: string }) => void;
+  onSubmit: (data: { firstName: string; lastName: string; departmentId: number; branchId?: number; manualPassword?: string; employmentStatus?: string }) => void;
 }
 
 export const CreateEmployeeModal = ({ isOpen, onClose, onSubmit }: Props) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [departmentId, setDepartmentId] = useState('');
+  const [branchId, setBranchId] = useState('');
   const [manualPassword, setManualPassword] = useState('');
   const [employmentStatus, setEmploymentStatus] = useState('PROBATION');
   const [departments, setDepartments] = useState<any[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
 
   useEffect(() => {
     if (isOpen) {
       getDepartments().then(setDepartments).catch(console.error);
+      getAllBranches().then(setBranches).catch(console.error);
     }
   }, [isOpen]);
 
@@ -27,7 +31,14 @@ export const CreateEmployeeModal = ({ isOpen, onClose, onSubmit }: Props) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstName || !lastName || !departmentId) return;
-    onSubmit({ firstName, lastName, departmentId: Number(departmentId), manualPassword, employmentStatus });
+    onSubmit({ 
+      firstName, 
+      lastName, 
+      departmentId: Number(departmentId), 
+      branchId: branchId ? Number(branchId) : undefined,
+      manualPassword, 
+      employmentStatus 
+    });
   };
 
   return (
@@ -64,6 +75,23 @@ export const CreateEmployeeModal = ({ isOpen, onClose, onSubmit }: Props) => {
               placeholder="e.g. Doe"
               required
             />
+          </div>
+
+          {/* Branch Selector */}
+          <div className="space-y-2">
+            <label className="text-sm text-gray-400 flex items-center gap-1.5">
+              <GitBranch className="w-3.5 h-3.5 text-blue-400" /> Branch
+            </label>
+            <select
+              value={branchId}
+              onChange={(e) => setBranchId(e.target.value)}
+              className="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-white/30 transition-colors appearance-none"
+            >
+              <option value="">Auto-assign (first branch)</option>
+              {branches.filter(b => b.isActive).map(branch => (
+                <option key={branch.id} value={branch.id}>{branch.name} {branch.city ? `— ${branch.city}` : ''}</option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-2">
@@ -117,8 +145,9 @@ export const CreateEmployeeModal = ({ isOpen, onClose, onSubmit }: Props) => {
             <button
               type="submit"
               disabled={!firstName || !lastName || !departmentId}
-              className="px-6 py-2.5 text-sm font-medium bg-white text-black hover:bg-gray-200 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2.5 text-sm font-medium bg-white text-black hover:bg-gray-200 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
+              <Check className="w-4 h-4" />
               Create Employee
             </button>
           </div>

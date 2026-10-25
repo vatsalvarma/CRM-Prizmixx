@@ -14,12 +14,15 @@ export interface Employee {
   site: string;
   employmentStatus: string;
   joiningDate: string;
+  branchId?: number;
+  branchName?: string;
 }
 
 export interface CreateEmployeeRequest {
   firstName: string;
   lastName: string;
   departmentId: number;
+  branchId?: number;
   manualPassword?: string;
   employmentStatus?: string;
 }

@@ -2,11 +2,13 @@ package com.prizmabrixx.crm.service;
 
 import com.prizmabrixx.crm.domain.entity.Department;
 import com.prizmabrixx.crm.domain.entity.Employee;
+import com.prizmabrixx.crm.domain.entity.Branch;
 import com.prizmabrixx.crm.domain.entity.Role;
 import com.prizmabrixx.crm.domain.entity.User;
 import com.prizmabrixx.crm.dto.CreateEmployeeRequest;
 import com.prizmabrixx.crm.dto.CreateEmployeeResponse;
 import com.prizmabrixx.crm.dto.EmployeeDTO;
+import com.prizmabrixx.crm.repository.BranchRepository;
 import com.prizmabrixx.crm.repository.DepartmentRepository;
 import com.prizmabrixx.crm.repository.EmployeeRepository;
 import com.prizmabrixx.crm.repository.RoleRepository;
@@ -37,6 +39,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
+    private final BranchRepository branchRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final LeaveBalanceRepository leaveBalanceRepository;
@@ -106,10 +109,20 @@ public class EmployeeService {
                 .build();
         user = userRepository.save(user);
 
+        // Assign branch (fallback to first branch if not specified)
+        Branch branch = null;
+        if (request.getBranchId() != null) {
+            branch = branchRepository.findById(request.getBranchId()).orElse(null);
+        }
+        if (branch == null) {
+            branch = branchRepository.findAll().stream().findFirst().orElse(null);
+        }
+
         Employee employee = Employee.builder()
                 .user(user)
                 .employeeId(newEmployeeId)
                 .department(department)
+                .branch(branch)
                 .joiningDate(LocalDate.now())
                 .employmentStatus(request.getEmploymentStatus() != null ? request.getEmploymentStatus() : "PROBATION")
                 .plainPassword(plainPassword)
@@ -205,6 +218,8 @@ public class EmployeeService {
                 .site(employee.getSite())
                 .employmentStatus(employee.getEmploymentStatus())
                 .joiningDate(employee.getJoiningDate())
+                .branchId(employee.getBranch() != null ? employee.getBranch().getId() : null)
+                .branchName(employee.getBranch() != null ? employee.getBranch().getName() : null)
                 .build();
     }
 }

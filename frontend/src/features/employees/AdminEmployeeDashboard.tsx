@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Briefcase, Plus, UserPlus } from 'lucide-react';
+import { Users, Briefcase, Plus, UserPlus, GitBranch } from 'lucide-react';
 import type { Employee, CreateEmployeeResponse } from '../../api/employeesApi';
 import { getAllEmployees } from '../../api/employeesApi';
 import { CreateEmployeeModal } from './CreateEmployeeModal';
 import { EmployeeCredentialsModal } from './EmployeeCredentialsModal';
 import { EmployeeDetailsPopup } from './EmployeeDetailsPopup';
+import { BranchManagementPanel } from './BranchManagementPanel';
 import { getHRLeads, type HRLead } from '../hr/hrApi';
 import { useWebSocket } from '../../hooks/useWebSocket';
 
@@ -15,6 +16,7 @@ export const AdminEmployeeDashboard = () => {
   const [createdCredentials, setCreatedCredentials] = useState<CreateEmployeeResponse | null>(null);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [hrLeads, setHrLeads] = useState<HRLead[]>([]);
+  const [activeTab, setActiveTab] = useState<'employees' | 'branches'>('employees');
 
   const fetchEmployees = async () => {
     try {
@@ -71,6 +73,37 @@ export const AdminEmployeeDashboard = () => {
         </button>
       </div>
 
+      {/* Tabs */}
+      <div className="flex gap-1 mb-8 p-1 bg-white/5 rounded-xl w-fit border border-white/10">
+        <button
+          onClick={() => setActiveTab('employees')}
+          className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'employees'
+              ? 'bg-white text-black shadow-lg'
+              : 'text-white/50 hover:text-white hover:bg-white/10'
+          }`}
+        >
+          <Users className="w-4 h-4" />
+          Employees
+        </button>
+        <button
+          onClick={() => setActiveTab('branches')}
+          className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'branches'
+              ? 'bg-white text-black shadow-lg'
+              : 'text-white/50 hover:text-white hover:bg-white/10'
+          }`}
+        >
+          <GitBranch className="w-4 h-4" />
+          Branches
+        </button>
+      </div>
+
+      {/* Conditional Tab Content */}
+      {activeTab === 'branches' ? (
+        <BranchManagementPanel />
+      ) : (
+        <>
       {/* Top Metric Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="glass-card rounded-[24px] p-6 flex items-center space-x-6">
@@ -152,6 +185,12 @@ export const AdminEmployeeDashboard = () => {
                         <span className="font-mono text-gray-300">{employee.employeeId || 'N/A'}</span>
                         <span className="w-1 h-1 rounded-full bg-white/20" />
                         <span>{employee.departmentName || 'No Department'}</span>
+                        {employee.branchName && (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-white/20" />
+                            <span className="flex items-center gap-1"><GitBranch className="w-3 h-3" />{employee.branchName}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -166,6 +205,8 @@ export const AdminEmployeeDashboard = () => {
           )}
         </div>
       </div>
+        </>
+      )}
 
       <CreateEmployeeModal 
         isOpen={isCreateModalOpen}

@@ -8,10 +8,10 @@ export const getPublicDepartments = async () => {
 
 export const loginApi = async (credentials: any) => {
   const response = await axiosClient.post('/auth/login', credentials);
-  const { token, email, role, departmentName } = response.data;
+  const { token, email, role, departmentName, branchName, branchId } = response.data;
   
   // Set in memory store
-  useAuthStore.getState().setAuth(token, email, role, departmentName);
+  useAuthStore.getState().setAuth(token, email, role, departmentName, branchName, branchId);
   
   // Configure interceptor to attach token to future requests
   axiosClient.interceptors.request.use((config) => {

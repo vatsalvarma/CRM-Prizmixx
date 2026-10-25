@@ -5,7 +5,9 @@ interface AuthState {
   email: String | null;
   role: String | null;
   departmentName: String | null;
-  setAuth: (token: string, email: string, role: string, departmentName?: string) => void;
+  branchName: String | null;
+  branchId: number | null;
+  setAuth: (token: string, email: string, role: string, departmentName?: string, branchName?: string, branchId?: number) => void;
   logout: () => void;
 }
 
@@ -14,6 +16,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   email: null,
   role: null,
   departmentName: null,
-  setAuth: (token, email, role, departmentName) => set({ token, email, role, departmentName }),
-  logout: () => set({ token: null, email: null, role: null, departmentName: null }),
+  branchName: null,
+  branchId: null,
+  setAuth: (token, email, role, departmentName, branchName, branchId) => set({ token, email, role, departmentName, branchName, branchId }),
+  logout: () => set({ token: null, email: null, role: null, departmentName: null, branchName: null, branchId: null }),
 }));

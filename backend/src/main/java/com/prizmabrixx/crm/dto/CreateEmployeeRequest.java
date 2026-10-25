@@ -10,4 +10,5 @@ public class CreateEmployeeRequest {
     private String manualPassword;
     private String email;
     private String employmentStatus;
+    private Long branchId;
 }

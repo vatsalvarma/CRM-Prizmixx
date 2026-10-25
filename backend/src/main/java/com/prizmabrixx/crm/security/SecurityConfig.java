@@ -37,7 +37,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/api/setup/**", "/ws/**", "/api/departments/public", "/api/public/**", "/api/leave/test-all", "/actuator/**", "/api/hr/documents/*/preview").permitAll()
+                .requestMatchers("/api/auth/**", "/api/setup/**", "/ws/**", "/api/departments/public", "/api/branches/public", "/api/public/**", "/api/leave/test-all", "/actuator/**", "/api/hr/documents/*/preview").permitAll()
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

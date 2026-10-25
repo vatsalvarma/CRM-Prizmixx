@@ -34,6 +34,8 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         String departmentName = null;
+        String branchName = null;
+        Long branchId = null;
         if ("ADMIN".equals(request.getType())) {
             String roleName = user.getRole().getName();
             if (!"ADMIN".equals(roleName) && !"SYSTEM_MASTER".equals(roleName)) {
@@ -42,11 +44,18 @@ public class AuthService {
         } else if ("EMPLOYEE".equals(request.getType())) {
             Employee employee = employeeRepository.findByUserId(user.getId())
                     .orElseThrow(() -> new RuntimeException("Employee record not found"));
-            if (request.getDepartmentId() != null && !request.getDepartmentId().equals(employee.getDepartment().getId())) {
+            if (request.getDepartmentId() != null && employee.getDepartment() != null && !request.getDepartmentId().equals(employee.getDepartment().getId())) {
                 throw new RuntimeException("wrong department");
+            }
+            if (request.getBranchId() != null && employee.getBranch() != null && !request.getBranchId().equals(employee.getBranch().getId())) {
+                throw new RuntimeException("wrong branch");
             }
             if (employee.getDepartment() != null) {
                 departmentName = employee.getDepartment().getName();
+            }
+            if (employee.getBranch() != null) {
+                branchName = employee.getBranch().getName();
+                branchId = employee.getBranch().getId();
             }
         }
 
@@ -58,6 +67,8 @@ public class AuthService {
                 .email(user.getEmail())
                 .role(user.getRole().getName())
                 .departmentName(departmentName)
+                .branchName(branchName)
+                .branchId(branchId)
                 .type("Bearer")
                 .build();
     }
