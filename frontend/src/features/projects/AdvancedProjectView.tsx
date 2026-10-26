@@ -382,13 +382,13 @@ export const AdvancedProjectView: React.FC<AdvancedProjectViewProps> = ({
         </div>
       )}
 
-      {/* 2. ANIMATED 4-STAGE PROGRESS STEPPER */}
+      {/* 2. ANIMATED 4-STAGE PROGRESS STEPPER (Image 2 style with existing logos) */}
       <div className="p-6 sm:p-8 rounded-3xl glass-card border border-white/10 shadow-[0_15px_50px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h3 className="text-lg font-medium text-white flex items-center gap-2">
+            <h3 className="text-xl font-medium text-white flex items-center gap-3">
               <span>Pipeline Stage Progression</span>
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-400/30">
+              <span className="text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 font-semibold border border-cyan-400/30 shadow-[0_0_12px_rgba(56,189,248,0.25)]">
                 {Math.round(progressPercent)}% Completed
               </span>
             </h3>
@@ -398,71 +398,132 @@ export const AdvancedProjectView: React.FC<AdvancedProjectViewProps> = ({
           </div>
 
           {project.status === 'COMPLETED' && (
-            <div className="flex items-center gap-2 text-xs text-emerald-400 font-semibold px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-400/30">
+            <div className="inline-flex items-center gap-2 text-xs text-emerald-400 font-semibold px-4 py-2 rounded-full bg-emerald-500/15 border border-emerald-400/30 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
               <CheckCircle2 className="w-4 h-4" />
               <span>All 4 Stages Complete!</span>
             </div>
           )}
         </div>
 
-        {/* PROGRESS BAR TRACK & ICONS */}
-        <div className="relative pt-4 pb-2">
-          {/* Background Connecting Bar */}
-          <div className="absolute top-1/2 left-8 right-8 h-1.5 -translate-y-1/2 bg-white/10 rounded-full z-0" />
+        {/* PROGRESS BAR TRACK & CIRCULAR NODES */}
+        <div className="relative pt-2 pb-2">
+          {/* Connecting Line Track: Spans strictly between center of node 1 (12.5%) and center of node 4 (87.5%) */}
+          <div className="absolute top-8 sm:top-10 left-[12.5%] right-[12.5%] h-1 -translate-y-1/2 z-0">
+            {/* Background inactive track */}
+            <div className="w-full h-full bg-white/10 rounded-full" />
 
-          {/* Animated Filled Gradient Progress Bar */}
-          <motion.div
-            className="absolute top-1/2 left-8 h-1.5 -translate-y-1/2 rounded-full z-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-emerald-400 shadow-[0_0_15px_rgba(56,189,248,0.7)]"
-            initial={{ width: 0 }}
-            animate={{ width: `calc(${progressPercent}% - 3rem)` }}
-            transition={{ duration: 1, ease: "easeInOut" }}
-          />
+            {/* Filled active/completed track connecting up to active stage */}
+            <motion.div
+              className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 shadow-[0_0_15px_rgba(59,130,246,0.9)]"
+              initial={{ width: 0 }}
+              animate={{
+                width: `${Math.min(completedCount / 3, 1) * 100}%`
+              }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            />
+          </div>
 
-          {/* 4 Stage Nodes */}
-          <div className="relative z-10 grid grid-cols-4 gap-2 sm:gap-6">
+          {/* 4 Stage Nodes on the Connecting Line */}
+          <div className="relative z-10 grid grid-cols-4">
             {STAGE_KEYS.map((key, idx) => {
               const stageData = stages.find(s => s.stageName === key);
               const status = stageData ? stageData.status : 'PENDING';
               const isSelected = activeStageKey === key;
               const meta = STAGE_METADATA[key];
+              const isCompleted = status === 'COMPLETED';
+              const isActive = status === 'IN_PROGRESS';
 
               return (
                 <div
                   key={key}
                   onClick={() => setActiveStageKey(key)}
-                  className={`cursor-pointer flex flex-col items-center text-center p-3 sm:p-4 rounded-2xl transition-all duration-300 ${
-                    isSelected
-                      ? 'bg-white/15 border-2 border-cyan-400 shadow-[0_0_30px_rgba(56,189,248,0.3)] -translate-y-1.5'
-                      : 'bg-white/[0.03] hover:bg-white/[0.08] border border-white/10 hover:-translate-y-1'
-                  }`}
+                  className="flex flex-col items-center text-center cursor-pointer group select-none"
                 >
-                  {/* Stage Logo with Draw Animation */}
-                  <div className="mb-2">
-                    <StageLogo stage={key} status={status} size={48} />
+                  {/* Circular Node centered on the track line */}
+                  <div className="relative">
+                    <motion.div
+                      whileHover={{ scale: 1.08 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        isCompleted
+                          ? 'bg-[#0a1628] border-2 border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.45)]'
+                          : isActive
+                          ? 'bg-[#081e35] border-2 border-cyan-400 shadow-[0_0_25px_rgba(6,182,212,0.6)] ring-4 ring-cyan-400/20'
+                          : 'bg-[#0f172a] border border-white/15 opacity-60 group-hover:opacity-100 group-hover:border-white/30'
+                      } ${
+                        isSelected
+                          ? 'ring-2 ring-cyan-300 ring-offset-4 ring-offset-slate-950 scale-105'
+                          : ''
+                      }`}
+                    >
+                      {/* Existing SVG Animated Stage Logo */}
+                      <StageLogo
+                        stage={key}
+                        status={status}
+                        size={36}
+                        shape="circle"
+                      />
+                    </motion.div>
+
+                    {/* Corner Status Badge (Matching Image 2) */}
+                    {isCompleted ? (
+                      // Image 2 Completed: Solid blue circle with white checkmark
+                      <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center border-2 border-slate-900 shadow-md">
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      </div>
+                    ) : isActive ? (
+                      // Image 2 Active: Dot in circle
+                      <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-cyan-400 text-slate-950 flex items-center justify-center border-2 border-slate-900 shadow-md">
+                        <div className="w-2.5 h-2.5 rounded-full bg-slate-950 animate-pulse" />
+                      </div>
+                    ) : (
+                      // Image 2 Upcoming: Step number indicator
+                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-slate-800 text-gray-400 text-[10px] font-bold flex items-center justify-center border border-white/10">
+                        {idx + 1}
+                      </div>
+                    )}
                   </div>
 
-                  <span className={`text-xs sm:text-sm font-semibold tracking-wide ${
-                    isSelected ? 'text-cyan-300' : 'text-gray-200'
-                  }`}>
+                  {/* Stage Label Underneath (Image 2 style) */}
+                  <span
+                    className={`mt-3 text-xs sm:text-sm font-semibold tracking-wide transition-colors ${
+                      isSelected
+                        ? 'text-cyan-300 font-bold'
+                        : isCompleted
+                        ? 'text-white'
+                        : isActive
+                        ? 'text-cyan-300'
+                        : 'text-gray-400 group-hover:text-gray-200'
+                    }`}
+                  >
                     {idx + 1}. {meta.label}
                   </span>
 
-                  {/* Status Indicator */}
-                  <div className="mt-1.5 flex items-center gap-1 text-[10px]">
-                    {status === 'COMPLETED' ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
-                        <CheckCircle2 className="w-3 h-3" /> Done
+                  {/* Status Indicator Underneath */}
+                  <div className="mt-1 text-[11px] sm:text-xs">
+                    {isCompleted ? (
+                      <span className="inline-flex items-center gap-1 text-blue-400 font-medium">
+                        <Check className="w-3 h-3 stroke-[2.5]" /> Done
                       </span>
-                    ) : status === 'IN_PROGRESS' ? (
-                      <span className="inline-flex items-center gap-1 text-cyan-400 font-medium animate-pulse">
-                        <Clock className="w-3 h-3" /> Active
+                    ) : isActive ? (
+                      <span className="inline-flex items-center gap-1.5 text-cyan-300 font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                        Active
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-gray-500 font-medium">
-                        <Lock className="w-3 h-3" /> Pending
+                        Upcoming
                       </span>
                     )}
                   </div>
+
+                  {/* Selected Notch Arrow pointing to details below */}
+                  {isSelected && (
+                    <motion.div
+                      layoutId="selectedStagePointer"
+                      className="mt-2 w-2 h-2 bg-cyan-400 rotate-45 rounded-xs shadow-[0_0_8px_#22d3ee]"
+                    />
+                  )}
                 </div>
               );
             })}

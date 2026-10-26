@@ -160,13 +160,15 @@ export interface StageLogoProps {
   size?: number;
   className?: string;
   isInteractive?: boolean;
+  shape?: 'rounded' | 'circle';
 }
 
 export const StageLogo: React.FC<StageLogoProps> = ({
   stage,
   status = 'PENDING',
   size = 54,
-  className = ""
+  className = "",
+  shape = 'rounded'
 }) => {
   const isCompleted = status === 'COMPLETED';
   const isActive = status === 'IN_PROGRESS';
@@ -353,9 +355,12 @@ export const StageLogo: React.FC<StageLogoProps> = ({
     }
   };
 
+  const isCircle = shape === 'circle';
+  const radiusClass = isCircle ? 'rounded-full' : 'rounded-2xl';
+
   return (
     <div
-      className={`relative rounded-2xl flex items-center justify-center p-1.5 transition-all duration-300 ${className}`}
+      className={`relative ${radiusClass} flex items-center justify-center p-1.5 transition-all duration-300 ${className}`}
       style={{
         boxShadow: isActive ? `0 0 24px ${glowColor}` : isCompleted ? '0 0 16px rgba(16, 185, 129, 0.2)' : 'none'
       }}
@@ -364,7 +369,7 @@ export const StageLogo: React.FC<StageLogoProps> = ({
       {/* Active Pulse Ring */}
       {isActive && (
         <motion.div
-          className="absolute inset-0 rounded-2xl border-2 border-cyan-400"
+          className={`absolute inset-0 ${radiusClass} border-2 border-cyan-400`}
           animate={{ scale: [1, 1.15, 1], opacity: [0.8, 0, 0.8] }}
           transition={{ repeat: Infinity, duration: 2.2, ease: "easeOut" }}
         />
