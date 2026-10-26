@@ -69,4 +69,21 @@ public class Project {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_employee_id")
     private Employee assignedEmployee;
+
+    @Column(name = "project_type", nullable = false, length = 50)
+    @Builder.Default
+    private String projectType = "NORMAL"; // NORMAL, ADVANCED
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_leader_id")
+    private Employee teamLeader;
+
+    @Column(name = "current_stage", length = 50)
+    @Builder.Default
+    private String currentStage = "DESIGN"; // DESIGN, RESOURCES, DEVELOP_TEST, DEPLOY, COMPLETED
+
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("stageOrder ASC")
+    @Builder.Default
+    private java.util.List<ProjectStage> stages = new java.util.ArrayList<>();
 }

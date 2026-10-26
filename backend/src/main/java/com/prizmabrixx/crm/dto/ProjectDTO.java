@@ -30,6 +30,14 @@ public class ProjectDTO {
     private String assignedDepartmentName;
     private String assignedEmployeeName;
     @Builder.Default
+    private String projectType = "NORMAL";
+    private Long teamLeaderId;
+    private String teamLeaderName;
+    @Builder.Default
+    private String currentStage = "DESIGN";
+    @Builder.Default
+    private java.util.List<ProjectStageDTO> stages = new java.util.ArrayList<>();
+    @Builder.Default
     private java.util.List<ProjectAttachmentDTO> attachments = new java.util.ArrayList<>();
     private LocalDateTime createdAt;
 }

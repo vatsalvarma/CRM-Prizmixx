@@ -9,6 +9,35 @@ export interface ProjectAttachment {
   createdAt: string;
 }
 
+export interface StageAssignee {
+  id: number;
+  employeeId?: string;
+  firstName: string;
+  lastName: string;
+  email?: string;
+  departmentName?: string;
+  branchName?: string;
+}
+
+export interface ProjectStage {
+  id: number;
+  projectId: number;
+  stageName: 'DESIGN' | 'RESOURCES' | 'DEVELOP_TEST' | 'DEPLOY' | string;
+  stageOrder: number;
+  status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+  title?: string;
+  description?: string;
+  referenceLinks?: string;
+  submissionLink?: string;
+  submissionNotes?: string;
+  submittedById?: number;
+  submittedByName?: string;
+  completedAt?: string;
+  assignees: StageAssignee[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Project {
   id: number;
   clientId: number;
@@ -19,11 +48,18 @@ export interface Project {
   referenceLinks?: string;
   attachments?: ProjectAttachment[];
   status: string;
+  projectType: 'NORMAL' | 'ADVANCED';
+  teamLeaderId?: number;
+  teamLeaderName?: string;
+  currentStage?: 'DESIGN' | 'RESOURCES' | 'DEVELOP_TEST' | 'DEPLOY' | 'COMPLETED' | string;
+  stages?: ProjectStage[];
   managerId?: number;
   managerName?: string;
   startDate?: string;
   endDate?: string;
+  assignedDepartmentId?: number;
   assignedDepartmentName?: string;
+  assignedEmployeeId?: number;
   assignedEmployeeName?: string;
   createdAt: string;
 }
@@ -58,7 +94,6 @@ export const deleteProject = async (id: number): Promise<void> => {
 export const createProject = async (project: Partial<Project>, files?: File[]): Promise<Project> => {
   const formData = new FormData();
   
-  // Create Blob from project JSON so it sets Content-Type application/json for this part correctly.
   formData.append('project', new Blob([JSON.stringify(project)], {
     type: "application/json"
   }));
@@ -74,6 +109,44 @@ export const createProject = async (project: Partial<Project>, files?: File[]): 
       'Content-Type': 'multipart/form-data',
     },
   });
+  return response.data;
+};
+
+export const getProjectStages = async (projectId: number): Promise<ProjectStage[]> => {
+  const response = await axiosClient.get(`/projects/${projectId}/stages`);
+  return response.data;
+};
+
+export const assignTeamLeader = async (projectId: number, teamLeaderId: number): Promise<Project> => {
+  const response = await axiosClient.put(`/projects/${projectId}/team-leader`, { teamLeaderId });
+  return response.data;
+};
+
+export const updateProjectStage = async (
+  projectId: number,
+  stageName: string,
+  data: { description?: string; referenceLinks?: string; assigneeEmployeeIds?: number[] }
+): Promise<ProjectStage> => {
+  const response = await axiosClient.put(`/projects/${projectId}/stages/${stageName}`, data);
+  return response.data;
+};
+
+export const submitStageWork = async (
+  projectId: number,
+  stageName: string,
+  data: { submissionLink: string; submissionNotes?: string }
+): Promise<ProjectStage> => {
+  const response = await axiosClient.post(`/projects/${projectId}/stages/${stageName}/submit`, data);
+  return response.data;
+};
+
+export const completeStage = async (projectId: number, stageName: string): Promise<ProjectStage> => {
+  const response = await axiosClient.post(`/projects/${projectId}/stages/${stageName}/complete`);
+  return response.data;
+};
+
+export const reopenStage = async (projectId: number, stageName: string): Promise<ProjectStage> => {
+  const response = await axiosClient.post(`/projects/${projectId}/stages/${stageName}/reopen`);
   return response.data;
 };
 

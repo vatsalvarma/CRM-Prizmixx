@@ -1,6 +1,10 @@
 package com.prizmabrixx.crm.controller;
 
+import com.prizmabrixx.crm.dto.AssignTeamLeaderRequest;
 import com.prizmabrixx.crm.dto.ProjectDTO;
+import com.prizmabrixx.crm.dto.ProjectStageDTO;
+import com.prizmabrixx.crm.dto.SubmitStageRequest;
+import com.prizmabrixx.crm.dto.UpdateStageRequest;
 import com.prizmabrixx.crm.service.FileUploadService;
 import com.prizmabrixx.crm.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +50,53 @@ public class ProjectController {
     public ResponseEntity<Void> deleteProject(@PathVariable Long id) {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/stages")
+    public ResponseEntity<List<ProjectStageDTO>> getStages(@PathVariable Long id) {
+        return ResponseEntity.ok(projectService.getProjectStages(id));
+    }
+
+    @PutMapping("/{id}/team-leader")
+    public ResponseEntity<ProjectDTO> assignTeamLeader(
+            @PathVariable Long id,
+            @RequestBody AssignTeamLeaderRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(projectService.assignTeamLeader(id, request.getTeamLeaderId(), authentication.getName()));
+    }
+
+    @PutMapping("/{id}/stages/{stageName}")
+    public ResponseEntity<ProjectStageDTO> updateStage(
+            @PathVariable Long id,
+            @PathVariable String stageName,
+            @RequestBody UpdateStageRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(projectService.updateStage(id, stageName, request, authentication.getName()));
+    }
+
+    @PostMapping("/{id}/stages/{stageName}/submit")
+    public ResponseEntity<ProjectStageDTO> submitStage(
+            @PathVariable Long id,
+            @PathVariable String stageName,
+            @RequestBody SubmitStageRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(projectService.submitStageWork(id, stageName, request, authentication.getName()));
+    }
+
+    @PostMapping("/{id}/stages/{stageName}/complete")
+    public ResponseEntity<ProjectStageDTO> completeStage(
+            @PathVariable Long id,
+            @PathVariable String stageName,
+            Authentication authentication) {
+        return ResponseEntity.ok(projectService.completeStage(id, stageName, authentication.getName()));
+    }
+
+    @PostMapping("/{id}/stages/{stageName}/reopen")
+    public ResponseEntity<ProjectStageDTO> reopenStage(
+            @PathVariable Long id,
+            @PathVariable String stageName,
+            Authentication authentication) {
+        return ResponseEntity.ok(projectService.reopenStage(id, stageName, authentication.getName()));
     }
     
     @GetMapping("/attachments/{fileName:.+}")
